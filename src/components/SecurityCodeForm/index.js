@@ -55,9 +55,7 @@ const SecurityCodeForm = props => {
         <div className="col-md-8 offset-md-2">
           <Button
             variant="contained"
-            handleClick={() => {
-              handleSaveBtnClick("securitycode");
-            }}
+            onClick={handleSaveBtnClick}
           >
             Save and go further
           </Button>

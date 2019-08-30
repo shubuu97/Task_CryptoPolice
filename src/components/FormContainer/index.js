@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Stepper from "react-stepper-horizontal";
 import RegistrationForm from "../RegistrationForm";
 import SecurityCodeForm from "../SecurityCodeForm";
+import UserProfileForm from "../UserProfileForm";
 
 class FormContainer extends Component {
   state = {
@@ -21,7 +22,7 @@ class FormContainer extends Component {
       securityCode: "",
       name: "",
       website: "",
-      country: "",
+      country: "IN",
       avatar: ""
     },
     isValid: {
@@ -67,8 +68,13 @@ class FormContainer extends Component {
   };
 
   handleSubmit = () => {
+    debugger
     this.setState({ activeStep: this.state.activeStep + 1 });
   };
+
+  handleFileDrop = () => {
+
+  }
 
   renderForm = () => {
     const { activeStep, formData, isValid } = this.state;
@@ -93,19 +99,17 @@ class FormContainer extends Component {
             handleSaveBtnClick={this.handleSubmit}
           />
         );
-      //   case 3:
-      //     return (
-      //       <UserProfileForm
-      //         name={formData.name}
-      //         website={formData.website}
-      //         handleChange={this.handleChange}
-      //         country={formData.country}
-      //         avatar={formData.avatar}
-      //         goToPrevStep={this.goToPrevStep}
-      //         handleSaveBtnClick={this.handleFooterBtnClick}
-      //         handleAvatarChange={this.handleAvatarChange}
-      //       />
-      //     );
+      case 3:
+        return (
+          <UserProfileForm
+            formData={formData}
+            isValid={isValid}
+            handleInputChange={this.handleInputChange}
+            handleFileDrop={this.handleFileDrop}
+            goToPrevStep={this.goToPrevStep}
+            handleCreateProfileClick={this.handleSubmit}
+          />
+        );
       //   case 4:
       //     const {
       //       name,
