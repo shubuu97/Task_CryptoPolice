@@ -8,6 +8,7 @@ import PhoneNoInput from "react-intl-tel-input";
 import "react-intl-tel-input/dist/main.css";
 import categoryOptions from "../../utility/categoryOptions";
 import { primaryColor, secondaryColor } from "../../constants";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -25,9 +26,13 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     color: "white",
     backgroundColor: primaryColor,
+    cursor: "pointer",
     "&:hover": {
       backgroundColor: secondaryColor
     }
+  },
+  checkbox: {
+    color: primaryColor
   }
 }));
 
@@ -37,8 +42,10 @@ const RegistrationForm = props => {
     isValid,
     handleInputChange,
     handleRegisterClick,
-    handlePhoneNoChange
+    handlePhoneNoChange,
+    handleCheckboxChange
   } = props;
+  const { email, phoneNumber, password, agreeCheck } = isValid;
   const classes = useStyles();
   return (
     <div className="container my-5">
@@ -51,7 +58,7 @@ const RegistrationForm = props => {
         <div className="col-md-2"></div>
         <div className="col-md-8">
           <TextField
-            error={!isValid.email}
+            error={!email}
             name="email"
             id="email"
             label="Email"
@@ -71,8 +78,9 @@ const RegistrationForm = props => {
             preferredCountries={["in"]}
             onPhoneNumberChange={handlePhoneNoChange}
             autoPlaceholder
+            value={formData.phoneNumber}
             inputClassName={
-              isValid.phoneNumber ? "form-control" : " form-control is-invalid"
+              phoneNumber ? "form-control" : " form-control is-invalid"
             }
           />
           ,
@@ -109,7 +117,7 @@ const RegistrationForm = props => {
         <div className="col-md-2"></div>
         <div className="col-md-8">
           <TextField
-            error={!isValid.password}
+            error={!password}
             type="password"
             id="password"
             label="Password"
@@ -124,8 +132,32 @@ const RegistrationForm = props => {
       <div className="row form-group">
         <div className="col-md-2"></div>
         <div className="col-md-8">
+          <Checkbox
+            checked={formData.agreeCheck}
+            onChange={handleCheckboxChange}
+            name="agreeCheck"
+            value="agree"
+            inputProps={{
+              "aria-label": "agree checkbox"
+            }}
+            className={classes.checkbox}
+          />
+          Agree with terms and conditions
+        </div>
+        <div className="col-md-2"></div>
+      </div>
+      <div className="row form-group">
+        <div className="col-md-2"></div>
+        <div className="col-md-8">
           <Button
-            // disabled
+            disabled={
+              !(
+                formData.email &&
+                formData.phoneNumber &&
+                formData.password &&
+                formData.agreeCheck
+              )
+            }
             className={classes.button}
             variant="outlined"
             onClick={handleRegisterClick}

@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import "react-intl-tel-input/dist/main.css";
+import { primaryColor, secondaryColor } from "../../constants";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -10,15 +11,28 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap"
   },
   textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: 1000
+    width: "100%",
+    margin: "50px 0px"
   },
   dense: {
     marginTop: 19
   },
   menu: {
     width: 200
+  },
+  saveButton: {
+    width: "100%",
+    color: "white",
+    backgroundColor: primaryColor,
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: secondaryColor
+    }
+  },
+
+  backButton: {
+    width: "100%",
+    textDecoration: "underline"
   }
 }));
 
@@ -39,13 +53,9 @@ const SecurityCodeForm = props => {
           <h5 className="my-3">Enter code below</h5>
         </div>
       </div>
-      <div className="row">
-        <div className="col-md-12">
-          <h3 className="text-center mb-4">Security Code</h3>
-        </div>
-      </div>
-      <div className="row mt-2">
-        <div className="col-md-6 offset-md-3">
+      <div className="row form-group">
+        <div className="col-md-2"></div>
+        <div className="col-md-8">
           <TextField
             error={!isValid.securityCode}
             name="securityCode"
@@ -56,18 +66,30 @@ const SecurityCodeForm = props => {
             className={classes.textField}
           />
         </div>
+        <div className="col-md-2"></div>
       </div>
-      <div className="row mt-5">
-        <div className="col-md-8 offset-md-2">
-          <Button variant="contained" onClick={handleSaveBtnClick}>
+      <div className="row form-group">
+        <div className="col-md-2"></div>
+        <div className="col-md-8">
+          <Button
+            disabled={!formData.securityCode}
+            className={classes.saveButton}
+            variant="outlined"
+            onClick={handleSaveBtnClick}
+          >
             Save and go further
           </Button>
         </div>
+        <div className="col-md-2"></div>
       </div>
-      <div className="row">
-        <div className="col-md-12 text-center">
-          <Button onClick={goToPrevStep}>Or go back!</Button>
+      <div className="row form-group">
+        <div className="col-md-4"></div>
+        <div className="col-md-4">
+          <Button className={classes.backButton} onClick={goToPrevStep}>
+            Or go back!
+          </Button>
         </div>
+        <div className="col-md-4"></div>
       </div>
     </div>
   );

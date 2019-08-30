@@ -4,79 +4,138 @@ import RegistrationForm from "../RegistrationForm";
 import SecurityCodeForm from "../SecurityCodeForm";
 import UserProfileForm from "../UserProfileForm";
 import { primaryColor, secondaryColor } from "../../constants";
+import localForage from "localforage";
+import _isEmpty from "lodash/isEmpty";
 
 class FormContainer extends Component {
-  state = {
-    steps: [
-      { title: "Register" },
-      { title: "Security Code" },
-      { title: "User profile" },
-      { title: "Thank you" }
-    ],
-    activeStep: 1,
-    formData: {
-      email: "",
-      phoneNumber: "",
-      category: "frontend",
-      password: "",
-      agreement: false,
-      securityCode: "",
-      name: "",
-      website: "",
-      country: "IN",
-      avatar: ""
-    },
-    isValid: {
-      email: true,
-      phoneNumber: true,
-      category: true,
-      password: true,
-      agreement: true,
-      securityCode: true,
-      name: true,
-      website: true,
-      country: true,
-      avatar: true
-    }
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      steps: [
+        { title: "Register" },
+        { title: "Security Code" },
+        { title: "User profile" },
+        { title: "Thank you" }
+      ],
+      activeStep: 1,
+      formData: {
+        email: "",
+        phoneNumber: "",
+        category: "frontend",
+        password: "",
+        agreeCheck: false,
+        securityCode: "",
+        name: "",
+        website: "",
+        country: "IN",
+        avatar: ""
+      },
+      isValid: {
+        email: true,
+        phoneNumber: true,
+        category: true,
+        password: true,
+        agreeCheck: false,
+        securityCode: true,
+        name: true,
+        website: true,
+        country: true,
+        avatar: true
+      }
+    };
+
+    localForage.getItem("isValid", (error, isValid) => {
+      if (!_isEmpty(isValid)) {
+        this.setState({ isValid });
+      }
+    });
+
+    localForage.getItem("formData", (error, formData) => {
+      if (!_isEmpty(formData)) {
+        this.setState({ formData });
+      }
+    });
+
+    localForage.getItem("activeStep", (error, activeStep) => {
+      if (activeStep) {
+        this.setState({ activeStep });
+      }
+    });
+  }
 
   handleInputChange = event => {
     const { name, value } = event.target;
     const { formData, isValid } = this.state;
     let updatedIsValid = { ...isValid, [name]: false };
-    this.setState({ isValid: updatedIsValid });
+    this.setState({ isValid: updatedIsValid }, () => {
+      localForage.setItem("isValid", this.state.isValid);
+    });
     if (name === "email") {
       let isValidEmail = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
         value
       );
       if (value && isValidEmail) {
         updatedIsValid = { ...isValid, [name]: true };
-        this.setState({ isValid: updatedIsValid });
+        this.setState({ isValid: updatedIsValid }, () => {
+          localForage.setItem("isValid", this.state.isValid);
+        });
       }
     } else if (value) {
       updatedIsValid = { ...isValid, [name]: true };
-      this.setState({ isValid: updatedIsValid });
+      this.setState({ isValid: updatedIsValid }, () => {
+        localForage.setItem("isValid", this.state.isValid);
+      });
     }
     let updatedFormData = { ...formData, [name]: value };
-    this.setState({ formData: updatedFormData });
+    this.setState({ formData: updatedFormData }, () => {
+      localForage.setItem("formData", this.state.formData);
+    });
+  };
+
+  handleCheckboxChange = event => {
+    const { name, checked } = event.target;
+    const { formData, isValid } = this.state;
+    let updatedIsValid = { ...isValid, [name]: false };
+    this.setState({ isValid: updatedIsValid }, () => {
+      localForage.setItem("isValid", this.state.isValid);
+    });
+    if (checked) {
+      updatedIsValid = { ...isValid, [name]: true };
+      this.setState({ isValid: updatedIsValid }, () => {
+        localForage.setItem("isValid", this.state.isValid);
+      });
+    }
+    let updatedFormData = { ...formData, [name]: checked };
+    this.setState({ formData: updatedFormData }, () => {
+      localForage.setItem("formData", this.state.formData);
+    });
   };
 
   handlePhoneNoChange = (isValidPhoneNumber, value, countryData) => {
     const { formData, isValid } = this.state;
     let updatedIsValid = { ...isValid, phoneNumber: isValidPhoneNumber };
     let updatedFormData = { ...formData, phoneNumber: value };
-    this.setState({ formData: updatedFormData, isValid: updatedIsValid });
+    this.setState(
+      { formData: updatedFormData, isValid: updatedIsValid },
+      () => {
+        localForage.setItem("formData", this.state.formData);
+        localForage.setItem("isValid", this.state.isValid);
+      }
+    );
   };
 
   handleSubmit = () => {
     const { activeStep } = this.state;
-    this.setState({ activeStep: activeStep + 1 });
+    this.setState({ activeStep: activeStep + 1 }, () => {
+      localForage.setItem("activeStep", this.state.activeStep);
+    });
   };
 
   goToPrevStep = () => {
-    debugger;
     const { activeStep } = this.state;
-    this.setState({ activeStep: activeStep - 1 });
+    this.setState({ activeStep: activeStep - 1 }, () => {
+      localForage.setItem("activeStep", this.state.activeStep);
+    });
   };
 
   handleFileDrop = () => {};
@@ -91,6 +150,7 @@ class FormContainer extends Component {
             isValid={isValid}
             handleInputChange={this.handleInputChange}
             handlePhoneNoChange={this.handlePhoneNoChange}
+            handleCheckboxChange={this.handleCheckboxChange}
             handleRegisterClick={this.handleSubmit}
           />
         );
