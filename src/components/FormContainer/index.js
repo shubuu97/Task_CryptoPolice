@@ -40,8 +40,9 @@ class FormContainer extends Component {
         name: true,
         website: true,
         country: true,
-        avatar: true
-      }
+        avatar: false
+      },
+      avatarName: ""
     };
 
     localForage.getItem("isValid", (error, isValid) => {
@@ -59,6 +60,12 @@ class FormContainer extends Component {
     localForage.getItem("activeStep", (error, activeStep) => {
       if (activeStep) {
         this.setState({ activeStep });
+      }
+    });
+
+    localForage.getItem("avatarName", (error, avatarName) => {
+      if (avatarName) {
+        this.setState({ avatarName });
       }
     });
   }
@@ -124,6 +131,24 @@ class FormContainer extends Component {
     );
   };
 
+  handleFileDrop = files => {
+    const { formData, isValid } = this.state;
+    if (!_isEmpty(files[0].path)) {
+      let updatedIsValid = { ...isValid, avatar: true };
+      this.setState({ isValid: updatedIsValid }, () => {
+        localForage.setItem("isValid", this.state.isValid);
+      });
+      let updatedFormData = { ...formData, avatar: files[0].path };
+      this.setState(
+        { formData: updatedFormData, avatarName: files[0].name },
+        () => {
+          localForage.setItem("formData", this.state.formData);
+          localForage.setItem("avatarName", this.state.avatarName);
+        }
+      );
+    }
+  };
+
   handleSubmit = () => {
     const { activeStep } = this.state;
     this.setState({ activeStep: activeStep + 1 }, () => {
@@ -138,10 +163,8 @@ class FormContainer extends Component {
     });
   };
 
-  handleFileDrop = () => {};
-
   renderForm = () => {
-    const { activeStep, formData, isValid } = this.state;
+    const { activeStep, formData, isValid, avatarName } = this.state;
     switch (activeStep) {
       case 1:
         return (
@@ -168,6 +191,7 @@ class FormContainer extends Component {
         return (
           <UserProfileForm
             formData={formData}
+            avatarName={avatarName}
             isValid={isValid}
             handleInputChange={this.handleInputChange}
             handleFileDrop={this.handleFileDrop}

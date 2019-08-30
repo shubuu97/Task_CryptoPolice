@@ -1,0 +1,12 @@
+.reactDropzone {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  border: 1px solid black;
+  padding: 30px;
+  border-radius: 5px;
+}
+
+.avatarName {
+  color: green;
+}
