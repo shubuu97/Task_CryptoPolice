@@ -31,7 +31,8 @@ const UserProfileForm = props => {
     isValid,
     handleInputChange,
     handleFileDrop,
-    handleCreateProfileClick
+    handleCreateProfileClick,
+    goToPrevStep
   } = props;
   const classes = useStyles();
   return (
@@ -89,17 +90,15 @@ const UserProfileForm = props => {
       <div className="row form-group">
         <div className="col-md-8">
           <Dropzone
-            onDrop={acceptedFiles =>
-                handleFileDrop(acceptedFiles)
-            }
+            onDrop={acceptedFiles => handleFileDrop(acceptedFiles)}
             accept="image/*"
-            onDropRejected={() => {alert('Please select a image file!')}}
+            onDropRejected={() => {
+              alert("Please select a image file!");
+            }}
           >
             {({ getRootProps, getInputProps }) => (
               <section>
-                <div
-                  {...getRootProps()}
-                >
+                <div {...getRootProps()}>
                   <input {...getInputProps()} />
                   <h5>Drag and drop file here or click to upload</h5>
                   <i className="fa fa-file-image-o" />
@@ -123,7 +122,7 @@ const UserProfileForm = props => {
       </div>
       <div className="row">
         <div className="col-md-12 text-center">
-          {/* <Button handleClick={goToPrevStep}>Or go back!</Button> */}
+          <Button onClick={goToPrevStep}>Or go back!</Button>
         </div>
       </div>
     </div>

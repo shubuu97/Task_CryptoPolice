@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import PhoneNoInput from "react-intl-tel-input";
 import "react-intl-tel-input/dist/main.css";
 import categoryOptions from "../../utility/categoryOptions";
+import { primaryColor, secondaryColor } from "../../constants";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -14,15 +15,19 @@ const useStyles = makeStyles(theme => ({
     flexWrap: "wrap"
   },
   textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: 1000
+    width: "100%",
+    margin: "10px 0px"
   },
-  dense: {
-    marginTop: 19
+  select: {
+    width: "100%"
   },
-  menu: {
-    width: 200
+  button: {
+    width: "100%",
+    color: "white",
+    backgroundColor: primaryColor,
+    "&:hover": {
+      backgroundColor: secondaryColor
+    }
   }
 }));
 
@@ -43,6 +48,7 @@ const RegistrationForm = props => {
         </div>
       </div>
       <div className="row form-group">
+        <div className="col-md-2"></div>
         <div className="col-md-8">
           <TextField
             error={!isValid.email}
@@ -54,10 +60,13 @@ const RegistrationForm = props => {
             className={classes.textField}
           />
         </div>
+        <div className="col-md-2"></div>
       </div>
       <div className="row form-group">
+        <div className="col-md-2"></div>
         <div className="col-md-8">
           <PhoneNoInput
+            style={{ width: "100%" }}
             containerClassName="intl-tel-input"
             preferredCountries={["in"]}
             onPhoneNumberChange={handlePhoneNoChange}
@@ -68,8 +77,10 @@ const RegistrationForm = props => {
           />
           ,
         </div>
+        <div className="col-md-2"></div>
       </div>
       <div className="row form-group">
+        <div className="col-md-2"></div>
         <div className="col-md-8">
           <Select
             autoWidth
@@ -80,15 +91,22 @@ const RegistrationForm = props => {
               name: "category",
               id: "category"
             }}
+            className={classes.select}
           >
             {categoryOptions.map(categoryOption => {
               const { name, value } = categoryOption;
-              return <MenuItem value={value}>{name}</MenuItem>;
+              return (
+                <MenuItem className={classes.select} value={value}>
+                  {name}
+                </MenuItem>
+              );
             })}
           </Select>
+          <div className="col-md-2"></div>
         </div>
       </div>
       <div className="row form-group">
+        <div className="col-md-2"></div>
         <div className="col-md-8">
           <TextField
             error={!isValid.password}
@@ -101,11 +119,21 @@ const RegistrationForm = props => {
             className={classes.textField}
           />
         </div>
+        <div className="col-md-2"></div>
       </div>
       <div className="row form-group">
+        <div className="col-md-2"></div>
         <div className="col-md-8">
-          <Button onClick={handleRegisterClick}>Register</Button>
+          <Button
+            // disabled
+            className={classes.button}
+            variant="outlined"
+            onClick={handleRegisterClick}
+          >
+            Register
+          </Button>
         </div>
+        <div className="col-md-2"></div>
       </div>
     </div>
   );

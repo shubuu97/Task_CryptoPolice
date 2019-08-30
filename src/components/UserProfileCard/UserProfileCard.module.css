@@ -1,0 +1,68 @@
+.profileContainer {
+  max-width: 69%;
+  margin: 0 auto;
+  display: flex;
+}
+
+.profileContainer > div {
+  flex-basis: 50%;
+  align-self: flex-end;
+  font-weight: 500;
+}
+
+.profileAvatarContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.profileAvatarContainer div:nth-child(2) {
+  align-self: flex-end;
+}
+
+.profileCardAvatarContainer {
+  display: flex;
+  overflow: hidden;
+}
+
+.profileCardAvatar {
+  height: 125px;
+  width: 125px;
+  margin-right: 4%;
+  text-align: center;
+}
+
+.profileCardAvatar img {
+  width: 100%;
+  height: 100%;
+}
+
+@media only screen and (max-width: 991px) {
+  .profileContainer {
+    max-width: 100%;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .profileContainer {
+    max-width: 100%;
+  }
+}
+
+@media only screen and (max-width: 620px) {
+  .profileContainer {
+    flex-direction: column;
+  }
+  .profileContainer > div {
+    flex-basis: 100%;
+    align-self: flex-start;
+  }
+  .profileAvatarContainer div:nth-child(2) {
+    margin-bottom: 5%;
+  }
+  .profileAvatarContainer {
+    flex-direction: column;
+  }
+  .profileCardAvatar {
+    margin-bottom: 6%;
+  }
+}

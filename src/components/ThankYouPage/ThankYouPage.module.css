@@ -1,0 +1,45 @@
+.container {
+  max-width: 90%;
+  margin: 0 auto;
+}
+.domainAdditionalInfo {
+  max-width: 69%;
+  margin: 3% auto;
+}
+
+.breakHeading {
+  text-align: center;
+  width: 100%;
+  word-break: break-word;
+}
+
+@media only screen and (max-width: 991px) {
+  .domainAdditionalInfo {
+    max-width: 95%;
+    margin: 3% auto;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .domainAdditionalInfo {
+    margin-top: 5%;
+  }
+  .domainAdditionalInfo > div {
+    justify-content: center !important;
+  }
+}
+
+@media only screen and (max-width: 620px) {
+  .profileHeading {
+    text-align: left !important;
+  }
+  .breakHeading h4 {
+    font-size: 1.4rem !important;
+  }
+}
+
+@media only screen and (max-width: 423px) {
+  .breakHeading h4 {
+    font-size: 1.2rem !important;
+  }
+}

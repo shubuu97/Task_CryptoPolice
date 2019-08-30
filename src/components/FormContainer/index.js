@@ -3,6 +3,7 @@ import Stepper from "react-stepper-horizontal";
 import RegistrationForm from "../RegistrationForm";
 import SecurityCodeForm from "../SecurityCodeForm";
 import UserProfileForm from "../UserProfileForm";
+import { primaryColor, secondaryColor } from "../../constants";
 
 class FormContainer extends Component {
   state = {
@@ -68,13 +69,17 @@ class FormContainer extends Component {
   };
 
   handleSubmit = () => {
-    debugger
-    this.setState({ activeStep: this.state.activeStep + 1 });
+    const { activeStep } = this.state;
+    this.setState({ activeStep: activeStep + 1 });
   };
 
-  handleFileDrop = () => {
+  goToPrevStep = () => {
+    debugger;
+    const { activeStep } = this.state;
+    this.setState({ activeStep: activeStep - 1 });
+  };
 
-  }
+  handleFileDrop = () => {};
 
   renderForm = () => {
     const { activeStep, formData, isValid } = this.state;
@@ -142,8 +147,11 @@ class FormContainer extends Component {
       <>
         <Stepper
           steps={steps}
-          activeTitleColor="#0b0ba8"
-          completeBarColor="#5096FF"
+          defaultColor={primaryColor}
+          completeColor={primaryColor}
+          activeColor={secondaryColor}
+          activeTitleColor={primaryColor}
+          completeBarColor={primaryColor}
           defaultBorderWidth={50}
           activeStep={activeStep - 1}
         />

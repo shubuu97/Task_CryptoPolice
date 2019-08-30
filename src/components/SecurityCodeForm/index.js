@@ -23,7 +23,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SecurityCodeForm = props => {
-  const { formData, isValid, handleInputChange, handleSaveBtnClick } = props;
+  const {
+    formData,
+    isValid,
+    handleInputChange,
+    handleSaveBtnClick,
+    goToPrevStep
+  } = props;
   const classes = useStyles();
   return (
     <div className="container my-5">
@@ -53,17 +59,14 @@ const SecurityCodeForm = props => {
       </div>
       <div className="row mt-5">
         <div className="col-md-8 offset-md-2">
-          <Button
-            variant="contained"
-            onClick={handleSaveBtnClick}
-          >
+          <Button variant="contained" onClick={handleSaveBtnClick}>
             Save and go further
           </Button>
         </div>
       </div>
       <div className="row">
         <div className="col-md-12 text-center">
-          {/* <Button handleClick={goToPrevStep}>Or go back!</Button> */}
+          <Button onClick={goToPrevStep}>Or go back!</Button>
         </div>
       </div>
     </div>
