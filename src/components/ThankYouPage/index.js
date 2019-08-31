@@ -1,265 +1,236 @@
 import React from "react";
-import RatingIndicator from "../widgets/RatingIndicator/RatingIndicator";
-import UserCommentsCard from "../widgets/UserCommentsCard/UserCommentsCard";
-import Spinner from "../widgets/Spinner/Spinner";
-import uuid from "uuid/v1";
 import axios from "axios";
-import styles from "./ThankYouPage.module.css";
-import UserProfileCard from "../UserProfileCard";
+import classes from "./ThankYouPage.module.css";
+import UserProfileCard from "../../widgets/UserProfileCard";
+import _get from "lodash/get";
+import { CircularProgress } from "@material-ui/core";
+import RatingComponent from "../../widgets/Rating";
+import InfoCard from "../../widgets/InfoCard";
+import UserCommentCard from "../../widgets/UserCommentCard";
+import Button from "@material-ui/core/Button";
+import { primaryColor, secondaryColor } from "../../constants";
+import { withStyles } from "@material-ui/styles";
+
+const styles = theme => ({
+  button: {
+    width: "40px",
+    color: "white",
+    backgroundColor: primaryColor,
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: secondaryColor
+    }
+  }
+});
 
 class ThankYouPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userComments: [],
-      fetched: false,
-      ratings: 0,
-      registrationDate: "",
-      expirationDate: "",
-      phishtankStatus: "",
-      etherscamDb: "",
-      trustworthiness: {
-        color: "",
-        value: ""
+      responseData: {
+        userComments: [],
+        domainRegistrationDate: "",
+        domainExpirationDate: "",
+        phishtankStatus: "",
+        etherscamStatus: "",
+        ratings: 0,
+        trust: {
+          color: "",
+          value: ""
+        }
       },
-      userCommentsToShow: []
+      isFetching: false,
+      userCommentsToShow: [],
+      showShowMoreButton: false,
+      loadingComments: false
     };
   }
 
-  setAnalysisData = data => {
-    this.setState({
-      userComments: (((data || {}).wot || {}).payload || {}).comments
-        ? [...data.wot.payload.comments]
-        : [],
-      userCommentsToShow: (((data || {}).wot || {}).payload || {}).comments
-        ? [...data.wot.payload.comments.slice(0, 2)]
-        : [],
-      ratings: (
-        (((data || {}).general_analysis || {}).payload || {}).ratings || {}
-      ).watchdog
-        ? ((((data || {}).general_analysis || {}).payload || {}).ratings || {})
-            .watchdog
-        : "Nothing Found",
-
-      registrationDate: (
-        (((data || {}).whois || {}).payload || {}).registration || {}
-      ).value
-        ? ((((data || {}).whois || {}).payload || {}).registration || {}).value
-        : "Nothing found",
-
-      expirationDate: (
-        (((data || {}).whois || {}).payload || {}).expiration || {}
-      ).value
-        ? ((((data || {}).whois || {}).payload || {}).expiration || {}).value
-        : "Nothing found",
-
-      phishtankStatus: (
-        (((data || {}).phishtank || {}).payload || {}).status || {}
-      ).value
-        ? ((((data || {}).phishtank || {}).payload || {}).status || {}).value
-        : "Nothing found",
-      etherscamDb: ((((data || {}).etherscam || {}).payload || {}).status || {})
-        .value
-        ? ((((data || {}).etherscam || {}).payload || {}).status || {}).value
-        : "Nothing found",
-
-      trustworthiness: {
-        color: ((((data || {}).wot || {}).payload || {}).trust || {}).color
-          ? ((((data || {}).wot || {}).payload || {}).trust || {}).color
-          : "golden",
-        value: ((((data || {}).wot || {}).payload || {}).trust || {}).value
-          ? ((((data || {}).wot || {}).payload || {}).trust || {}).value
-          : 0
-      },
-      fetched: true
-    });
-  };
-
   componentDidMount() {
+    this.setState({ isFetching: true });
+    const { website } = this.props.formData;
     axios
-      .post("https://watchdog-api-v1.cryptopolice.com/api/verify", {
-        domain: this.props.website
-      })
+      .post(
+        "https://watchdog-api-v1.cryptopolice.com/api/verify?domain=https://google.com",
+        {
+          domain: website
+        }
+      )
       .then(res => {
-        this.setAnalysisData(res.data.response);
+        const { response } = res.data;
+        const { responseData } = this.state;
+        if (res.status == 200) {
+          let updatedResponseData = {
+            ...responseData,
+            domainRegistrationDate: _get(
+              response,
+              "whois.payload.registration.value",
+              "Not Found!"
+            ),
+            domainExpirationDate: _get(
+              response,
+              "whois.payload.expiration.value",
+              "Not Found!"
+            ),
+            phishtankStatus: _get(
+              response,
+              "phishtank.payload.status.value",
+              "Not Found!"
+            ),
+            etherscamStatus: _get(
+              response,
+              "etherscam.payload.status.value",
+              "Not Found!"
+            ),
+            ratings: _get(response, "wot.payload.rating", 0),
+            trust: {
+              ...responseData.trust,
+              value: _get(response, "wot.payload.trust.value", 0),
+              color: _get(response, "wot.payload.trust.color", "")
+            },
+            userComments: _get(response, "wot.payload.comments", [])
+          };
+          const calUserCommentsToShow = () => {
+            let userCommentsToShow = [];
+            if (updatedResponseData.userComments.length > 2) {
+              userCommentsToShow = updatedResponseData.userComments.slice(0, 2);
+            } else {
+              userCommentsToShow = updatedResponseData.userComments;
+            }
+            return userCommentsToShow;
+          };
+          this.setState({
+            responseData: updatedResponseData,
+            isFetching: false,
+            userCommentsToShow: calUserCommentsToShow(),
+            showShowMoreButton:
+              updatedResponseData.userComments.length >
+              calUserCommentsToShow().length
+          });
+        }
       })
       .catch(err => {
-        this.setState({ fetched: true });
+        this.setState({ isFetching: false });
         console.log(err);
       });
   }
 
-  renderUserComments = () => {
-    const { fetched, userCommentsToShow } = this.state;
-    return userCommentsToShow.length > 0 ? (
-      userCommentsToShow.map(commentData => {
-        return (
-          <div className="col-md-12 my-2" key={uuid()}>
-            <UserCommentsCard commentData={commentData} />
-          </div>
-        );
-      })
-    ) : !fetched ? (
-      <div className="col-md-12 text-center">loading...</div>
-    ) : (
-      <div className="col-md-12 text-center">No user comments found</div>
-    );
-  };
-
-  renderDomainAdditionalInfo = () => {
-    return (
-      <div className={`row ${styles.domainAdditionalInfo}`}>
-        <div className="col-md-6 d-flex">
-          <div>
-            <p>Domain registration date : {this.state.registrationDate}</p>
-            <p>Domain expiration date : {this.state.expirationDate}</p>
-          </div>
-        </div>
-        <div className="col-md-6 d-flex justify-content-end">
-          <div>
-            <p>Phishtank status : {this.state.phishtankStatus}</p>
-            <p>Etherscam DB : {this.state.etherscamDb}</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  renderRatingIndicator = () => {
-    return this.state.fetched ? (
-      <RatingIndicator
-        rating={Number(this.state.ratings)}
-        starRatedColor={this.state.trustworthiness.color}
-        starDimension="40px"
-        starSpacing="5px"
-        numberOfStars={5}
-        name="rating"
-      />
-    ) : null;
-  };
-
-  renderSpinner = () => {
-    return (
-      <div className="row my-5">
-        <div className="col-md-12 text-center">
-          <Spinner />
-          <Spinner />
-          <Spinner />
-        </div>
-      </div>
-    );
-  };
-
-  renderShowMoreBtn = () => {
-    return this.state.userComments.length > 0 ? (
-      <div className="row my-2 text-center">
-        <div className="col-md-12">
-          <div>
-            <a
-              href="/"
-              alt="show more"
-              onClick={e => {
-                this.handleShowMoreBtnClick(e);
-              }}
-            >
-              {this.state.userComments.length ===
-              this.state.userCommentsToShow.length
-                ? null
-                : "Show more"}
-            </a>
-          </div>
-        </div>
-      </div>
-    ) : null;
-  };
-
-  handleShowMoreBtnClick = e => {
-    e.preventDefault();
-    const { userCommentsToShow, userComments } = this.state;
-    const userCommentsLength = userComments.length;
-    const userCommentsToShowLength = userCommentsToShow.length;
-    if (userCommentsToShowLength === 2) {
+  fetchComments = () => {
+    this.setState({ loadingComments: true });
+    const { userCommentsToShow } = this.state;
+    const { userComments } = this.state.responseData;
+    if (userComments.length <= userCommentsToShow.length) {
+      this.setState({ showShowMoreButton: false, loadingComments: false });
+    }
+    if (userCommentsToShow.length === 2) {
       this.setState({
         userCommentsToShow: [
           ...userCommentsToShow,
           ...userComments.slice(
-            userCommentsToShowLength,
-            userCommentsLength < 10 ? userCommentsLength : 10
+            userCommentsToShow.length,
+            userComments.length < 10 ? userComments.length : 10
           )
-        ]
+        ],
+        loadingComments: false
       });
-    } else if (userCommentsToShowLength > 2) {
+    } else if (userCommentsToShow.length > 2) {
       this.setState({
         userCommentsToShow: [
           ...userCommentsToShow,
           ...userComments.slice(
-            userCommentsToShowLength,
-            userCommentsLength < userCommentsToShowLength + 10
-              ? userCommentsLength
-              : userCommentsToShowLength + 10
+            userCommentsToShow.length,
+            userComments.length < userCommentsToShow.length + 10
+              ? userComments.length
+              : userCommentsToShow.length + 10
           )
-        ]
+        ],
+        loadingComments: false
       });
     }
   };
 
-  renderAnalysesInfo = () => {
+  showResponseData = classes => {
+    const {
+      responseData,
+      userCommentsToShow,
+      showShowMoreButton,
+      loadingComments
+    } = this.state;
     return (
-      <>
+      <React.Fragment>
         <div className="text-center mt-3">
           <h5 className="mb-2">
-            {this.state.ratings > 2 ? "Low Risk" : "High Risk"}
+            {responseData.ratings > 3 ? "Low Risk" : "High Risk"}
           </h5>
-          {this.renderRatingIndicator()}
+          <RatingComponent rating={responseData.rating} />
         </div>
-        {this.renderDomainAdditionalInfo()}
-
-        <div className="row">
-          <div className={`col-md-12 text-center ${styles.breakHeading}`}>
-            <h4>
-              Trustworthiness:{" "}
-              {this.state.trustworthiness.value !== "Nothing found"
-                ? this.state.trustworthiness.value + " / 5.0"
-                : this.state.trustworthiness.value}
-            </h4>
+        <InfoCard responseData={responseData} />
+        <div>
+          <h4>Trustworthiness: {responseData.trust.value} / 5.0</h4>
+        </div>
+        {userCommentsToShow &&
+          userCommentsToShow.map(userComment => {
+            console.log(userComment);
+            return <UserCommentCard userComment={userComment} />;
+          })}
+        {showShowMoreButton ? (
+          <div className="row form-group">
+            <div className="col-md-2"></div>
+            <div className="col-md-8">
+              {loadingComments ? (
+                <CircularProgress />
+              ) : (
+                <Button
+                  className={classes.button}
+                  variant="outlined"
+                  onClick={this.fetchComments}
+                >
+                  Show More
+                </Button>
+              )}
+            </div>
+            <div className="col-md-2"></div>
           </div>
-        </div>
-        <div className="row my-4">{this.renderUserComments()}</div>
-        {this.renderShowMoreBtn()}
-      </>
+        ) : (
+          ""
+        )}
+      </React.Fragment>
     );
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={`my-5 ${styles.container}`}>
+      <div className={`my-5 ${classes.container}`}>
         <div className="row">
           <div className="col-md-12">
-            <h3 className={`text-center mb-4 ${styles.profileHeading}`}>
+            <h3 className={`text-center mb-4 ${classes.profileHeading}`}>
               Thank you! Your profile is created!
             </h3>
           </div>
         </div>
         <div className="row">
           <div className="col-md-12">
-            <UserProfileCard {...this.props} />
+            <UserProfileCard {...this.props.formData} />
           </div>
         </div>
         <div className="row mt-5">
           <div className="col-md-12">
-            <div className={styles.breakHeading}>
-              <h4>Your website {this.props.website} analyses</h4>
+            <div className={classes.breakHeading}>
+              <h4>Your website {this.props.formData.website} analyses:</h4>
             </div>
           </div>
         </div>
         <div>
-          {this.state.fetched
-            ? this.renderAnalysesInfo()
-            : this.renderSpinner()}
+          {this.state.isFetching ? (
+            <CircularProgress />
+          ) : (
+            this.showResponseData(classes)
+          )}
         </div>
       </div>
     );
   }
 }
 
-export default ThankYouPage;
+export default withStyles(styles)(ThankYouPage);

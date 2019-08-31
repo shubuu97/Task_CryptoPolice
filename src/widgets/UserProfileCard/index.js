@@ -6,19 +6,19 @@ const UserProfileCard = ({
   category,
   email,
   country,
-  intlPhoneInput,
+  phoneNumber,
   website
 }) => {
   return (
     <div className={`${styles.profileContainer}`}>
       <div className={styles.profileAvatarContainer}>
         <div className={`${styles.profileCardAvatar}`}>
-          <img src={avatar} alt="avatar" />
+          <img src="./girl.jpg" alt="avatar" />
         </div>
         <div>
           <p>{name}</p>
           <p>{email}</p>
-          <div>{intlPhoneInput}</div>
+          <div>{phoneNumber}</div>
         </div>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>

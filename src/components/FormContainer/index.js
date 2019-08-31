@@ -3,6 +3,7 @@ import Stepper from "react-stepper-horizontal";
 import RegistrationForm from "../RegistrationForm";
 import SecurityCodeForm from "../SecurityCodeForm";
 import UserProfileForm from "../UserProfileForm";
+import ThankYouPage from "../ThankYouPage";
 import { primaryColor, secondaryColor } from "../../constants";
 import localForage from "localforage";
 import _isEmpty from "lodash/isEmpty";
@@ -199,27 +200,8 @@ class FormContainer extends Component {
             handleCreateProfileClick={this.handleSubmit}
           />
         );
-      //   case 4:
-      //     const {
-      //       name,
-      //       category,
-      //       email,
-      //       country,
-      //       intlPhoneInput,
-      //       website,
-      //       avatar
-      //     } = formData;
-      //     return (
-      //       <ThankYouPage
-      //         avatar={avatar.value}
-      //         name={name.value}
-      //         category={category.value}
-      //         email={email.value}
-      //         country={country.value}
-      //         intlPhoneInput={intlPhoneInput.value}
-      //         website={website.value}
-      //       />
-      //     );
+      case 4:
+        return <ThankYouPage formData={formData} />;
       default:
         return null;
     }

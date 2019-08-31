@@ -1,0 +1,107 @@
+.commentsCardContainer {
+  display: flex;
+  max-width: 55%;
+  margin: 0 auto;
+}
+
+.commentsCardContainer div:nth-child(1) {
+  flex-basis: 15%;
+  word-break: break-word;
+}
+
+.commentsCardContainer div:nth-child(2) {
+  flex-basis: 85%;
+  word-break: break-word;
+}
+
+.commentsAvatarContainer {
+  height: 75px;
+  width: 75px;
+  text-align: center;
+  border: 1px solid #d8d8d8;
+}
+
+.commentsAvatarContainer img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.commentsHeader {
+  display: flex;
+}
+
+.commentsHeader > p {
+  flex-basis: 50%;
+}
+
+@media only screen and (max-width: 1290px) {
+  .commentsCardContainer {
+    max-width: 66%;
+  }
+}
+
+@media only screen and (max-width: 1229px) {
+  .commentsCardContainer div:nth-child(1) {
+    flex-basis: 18%;
+    word-break: break-word;
+  }
+
+  .commentsCardContainer div:nth-child(2) {
+    flex-basis: 82%;
+    word-break: break-word;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .commentsCardContainer {
+    max-width: 76%;
+  }
+
+  .commentsCardContainer div:nth-child(1) {
+    flex-basis: 20%;
+    word-break: break-word;
+  }
+
+  .commentsCardContainer div:nth-child(2) {
+    flex-basis: 80%;
+    word-break: break-word;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .commentsCardContainer {
+    max-width: 95%;
+    margin: 0 auto;
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  .commentsCardContainer {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media only screen and (max-width: 579px) {
+  .commentsCardContainer div:nth-child(1) {
+    flex-basis: 25%;
+    word-break: break-word;
+  }
+
+  .commentsCardContainer div:nth-child(2) {
+    flex-basis: 75%;
+    word-break: break-word;
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .commentsCardContainer {
+    flex-direction: column;
+  }
+  .commentsHeader {
+    flex-direction: column;
+  }
+  .commentsHeader > p {
+    margin-top: 2%;
+  }
+}
