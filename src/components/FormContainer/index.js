@@ -7,6 +7,7 @@ import ThankYouPage from "../ThankYouPage";
 import { primaryColor, secondaryColor } from "../../constants";
 import localForage from "localforage";
 import _isEmpty from "lodash/isEmpty";
+import { storage } from "../../firebase";
 
 class FormContainer extends Component {
   constructor(props) {
@@ -28,7 +29,7 @@ class FormContainer extends Component {
         securityCode: "",
         name: "",
         website: "",
-        country: "IN",
+        country: "India",
         avatar: ""
       },
       isValid: {
@@ -43,7 +44,8 @@ class FormContainer extends Component {
         country: true,
         avatar: false
       },
-      avatarName: ""
+      avatarName: "",
+      uploadingImage: false
     };
 
     localForage.getItem("isValid", (error, isValid) => {
@@ -83,6 +85,16 @@ class FormContainer extends Component {
         value
       );
       if (value && isValidEmail) {
+        updatedIsValid = { ...isValid, [name]: true };
+        this.setState({ isValid: updatedIsValid }, () => {
+          localForage.setItem("isValid", this.state.isValid);
+        });
+      }
+    } else if (name === "website") {
+      const isValidWebsite = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
+        value
+      );
+      if (value && isValidWebsite) {
         updatedIsValid = { ...isValid, [name]: true };
         this.setState({ isValid: updatedIsValid }, () => {
           localForage.setItem("isValid", this.state.isValid);
@@ -133,18 +145,41 @@ class FormContainer extends Component {
   };
 
   handleFileDrop = files => {
+    this.setState({ uploadingImage: true });
     const { formData, isValid } = this.state;
     if (!_isEmpty(files[0].path)) {
-      let updatedIsValid = { ...isValid, avatar: true };
-      this.setState({ isValid: updatedIsValid }, () => {
-        localForage.setItem("isValid", this.state.isValid);
-      });
-      let updatedFormData = { ...formData, avatar: files[0].path };
-      this.setState(
-        { formData: updatedFormData, avatarName: files[0].name },
+      const uploadTask = storage.ref(`images/${files[0].name}`).put(files[0]);
+      uploadTask.on(
+        "state_changed",
+        snapshot => {
+          console.log(snapshot);
+        },
+        error => {
+          console.log(error);
+        },
         () => {
-          localForage.setItem("formData", this.state.formData);
-          localForage.setItem("avatarName", this.state.avatarName);
+          storage
+            .ref("images")
+            .child(files[0].name)
+            .getDownloadURL()
+            .then(url => {
+              let updatedIsValid = { ...isValid, avatar: true };
+              this.setState({ isValid: updatedIsValid }, () => {
+                localForage.setItem("isValid", this.state.isValid);
+              });
+              let updatedFormData = { ...formData, avatar: url };
+              this.setState(
+                {
+                  formData: updatedFormData,
+                  avatarName: files[0].name,
+                  uploadingImage: false
+                },
+                () => {
+                  localForage.setItem("formData", this.state.formData);
+                  localForage.setItem("avatarName", this.state.avatarName);
+                }
+              );
+            });
         }
       );
     }
@@ -165,7 +200,13 @@ class FormContainer extends Component {
   };
 
   renderForm = () => {
-    const { activeStep, formData, isValid, avatarName } = this.state;
+    const {
+      activeStep,
+      formData,
+      isValid,
+      avatarName,
+      uploadingImage
+    } = this.state;
     switch (activeStep) {
       case 1:
         return (
@@ -192,6 +233,7 @@ class FormContainer extends Component {
         return (
           <UserProfileForm
             formData={formData}
+            uploadingImage={uploadingImage}
             avatarName={avatarName}
             isValid={isValid}
             handleInputChange={this.handleInputChange}

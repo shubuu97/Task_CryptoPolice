@@ -13,6 +13,17 @@
   word-break: break-word;
 }
 
+.rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+
+.userComments {
+  margin: 20px 0px;
+}
+
 @media only screen and (max-width: 991px) {
   .domainAdditionalInfo {
     max-width: 95%;

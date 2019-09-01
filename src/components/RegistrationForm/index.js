@@ -1,4 +1,5 @@
 import React from "react";
+import { withStyles } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -9,6 +10,16 @@ import "react-intl-tel-input/dist/main.css";
 import categoryOptions from "../../utility/categoryOptions";
 import { primaryColor, secondaryColor } from "../../constants";
 import Checkbox from "@material-ui/core/Checkbox";
+
+const GreenCheckbox = withStyles({
+  root: {
+    color: primaryColor,
+    "&$checked": {
+      color: primaryColor
+    }
+  },
+  checked: {}
+})(props => <Checkbox color="default" {...props} />);
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -30,9 +41,6 @@ const useStyles = makeStyles(theme => ({
     "&:hover": {
       backgroundColor: secondaryColor
     }
-  },
-  checkbox: {
-    color: primaryColor
   }
 }));
 
@@ -132,7 +140,7 @@ const RegistrationForm = props => {
       <div className="row form-group">
         <div className="col-md-2"></div>
         <div className="col-md-8">
-          <Checkbox
+          <GreenCheckbox
             checked={formData.agreeCheck}
             onChange={handleCheckboxChange}
             name="agreeCheck"
@@ -155,7 +163,10 @@ const RegistrationForm = props => {
                 formData.email &&
                 formData.phoneNumber &&
                 formData.password &&
-                formData.agreeCheck
+                formData.agreeCheck &&
+                email &&
+                phoneNumber &&
+                password
               )
             }
             className={classes.button}

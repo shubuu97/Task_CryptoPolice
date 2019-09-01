@@ -24,6 +24,7 @@
 
 /*---- Styling the header logo image ----*/
 .headerLogoContainer img {
+  margin-left: 10px;
   height: 75px;
   width: auto;
 }

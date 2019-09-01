@@ -72,7 +72,7 @@ const SecurityCodeForm = props => {
         <div className="col-md-2"></div>
         <div className="col-md-8">
           <Button
-            disabled={!formData.securityCode}
+            disabled={!(formData.securityCode && isValid.securityCode)}
             className={classes.saveButton}
             variant="outlined"
             onClick={handleSaveBtnClick}

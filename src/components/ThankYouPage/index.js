@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import classes from "./ThankYouPage.module.css";
+import styles from "./ThankYouPage.module.css";
 import UserProfileCard from "../../widgets/UserProfileCard";
 import _get from "lodash/get";
 import { CircularProgress } from "@material-ui/core";
@@ -11,15 +11,25 @@ import Button from "@material-ui/core/Button";
 import { primaryColor, secondaryColor } from "../../constants";
 import { withStyles } from "@material-ui/styles";
 
-const styles = theme => ({
+const ColorCircularProgress = withStyles({
+  root: {
+    color: primaryColor,
+    marginTop: "20px"
+  }
+})(CircularProgress);
+
+const materialStyles = theme => ({
   button: {
-    width: "40px",
+    width: "auto",
     color: "white",
     backgroundColor: primaryColor,
     cursor: "pointer",
     "&:hover": {
       backgroundColor: secondaryColor
     }
+  },
+  spinner: {
+    color: primaryColor
   }
 });
 
@@ -162,34 +172,44 @@ class ThankYouPage extends React.Component {
           <h5 className="mb-2">
             {responseData.ratings > 3 ? "Low Risk" : "High Risk"}
           </h5>
-          <RatingComponent rating={responseData.rating} />
+          <div className={styles.rating}>
+            <RatingComponent
+              rating={responseData.rating}
+              color={responseData.trust.color}
+            />
+          </div>
         </div>
-        <InfoCard responseData={responseData} />
-        <div>
+        <div className="row">
+          <div className="col-md-2"></div>
+          <div className="col-md-8">
+            <InfoCard responseData={responseData} />
+          </div>
+          <div className="col-md-2"></div>
+        </div>
+        <div className="text-center mt-3">
           <h4>Trustworthiness: {responseData.trust.value} / 5.0</h4>
         </div>
-        {userCommentsToShow &&
-          userCommentsToShow.map(userComment => {
-            console.log(userComment);
-            return <UserCommentCard userComment={userComment} />;
-          })}
+        <div className={styles.userComments}>
+          {userCommentsToShow &&
+            userCommentsToShow.map(userComment => {
+              console.log(userComment);
+              return <UserCommentCard userComment={userComment} />;
+            })}
+        </div>
+
         {showShowMoreButton ? (
-          <div className="row form-group">
-            <div className="col-md-2"></div>
-            <div className="col-md-8">
-              {loadingComments ? (
-                <CircularProgress />
-              ) : (
-                <Button
-                  className={classes.button}
-                  variant="outlined"
-                  onClick={this.fetchComments}
-                >
-                  Show More
-                </Button>
-              )}
-            </div>
-            <div className="col-md-2"></div>
+          <div style={{ justifyContent: "center" }} className="row">
+            {loadingComments ? (
+              <CircularProgress />
+            ) : (
+              <Button
+                className={classes.button}
+                variant="outlined"
+                onClick={this.fetchComments}
+              >
+                Show More
+              </Button>
+            )}
           </div>
         ) : (
           ""
@@ -201,10 +221,10 @@ class ThankYouPage extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <div className={`my-5 ${classes.container}`}>
+      <div className={`my-5 ${styles.container}`}>
         <div className="row">
           <div className="col-md-12">
-            <h3 className={`text-center mb-4 ${classes.profileHeading}`}>
+            <h3 className={`text-center mb-4  + ${styles.profileHeading}`}>
               Thank you! Your profile is created!
             </h3>
           </div>
@@ -216,14 +236,16 @@ class ThankYouPage extends React.Component {
         </div>
         <div className="row mt-5">
           <div className="col-md-12">
-            <div className={classes.breakHeading}>
+            <div className={styles.breakHeading}>
               <h4>Your website {this.props.formData.website} analyses:</h4>
             </div>
           </div>
         </div>
         <div>
           {this.state.isFetching ? (
-            <CircularProgress />
+            <div style={{ justifyContent: "center" }} className="row">
+              <ColorCircularProgress size={80} />
+            </div>
           ) : (
             this.showResponseData(classes)
           )}
@@ -233,4 +255,4 @@ class ThankYouPage extends React.Component {
   }
 }
 
-export default withStyles(styles)(ThankYouPage);
+export default withStyles(materialStyles)(ThankYouPage);

@@ -11,7 +11,7 @@ const Header = props => {
         </div>
         <ul className={styles.headerLinkList}>
           <li className={styles.headerLinkListItem}>
-            <a href="/" alt="homepage">
+            <a alt="homepage">
               <span>
                 <i className="fa fa-home mr-2" />
               </span>
@@ -19,7 +19,7 @@ const Header = props => {
             </a>
           </li>
           <li className={styles.headerLinkListItem}>
-            <a href="/">
+            <a>
               <span>
                 <i className="fa fa-linkedin-square mr-2" />
               </span>
@@ -27,7 +27,7 @@ const Header = props => {
             </a>
           </li>
           <li className={styles.headerLinkListItem}>
-            <a href="/">
+            <a>
               <span>
                 <i className="fa fa-github-square mr-2" />
               </span>

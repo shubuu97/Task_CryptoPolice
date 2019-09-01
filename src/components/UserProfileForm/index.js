@@ -8,6 +8,15 @@ import Dropzone from "react-dropzone";
 import countryList from "../../utility/countrieslist";
 import { primaryColor, secondaryColor } from "../../constants";
 import styles from "./UserProfileForm.module.css";
+import { CircularProgress } from "@material-ui/core";
+import { withStyles } from "@material-ui/styles";
+
+const ColorCircularProgress = withStyles({
+  root: {
+    color: primaryColor,
+    marginTop: "10px"
+  }
+})(CircularProgress);
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -51,8 +60,10 @@ const UserProfileForm = props => {
     handleFileDrop,
     handleCreateProfileClick,
     goToPrevStep,
-    avatarName
+    avatarName,
+    uploadingImage
   } = props;
+  const { name, website } = isValid;
   const classes = useStyles();
   return (
     <div className="container my-5">
@@ -65,7 +76,7 @@ const UserProfileForm = props => {
         <div className="col-md-2"></div>
         <div className="col-md-8">
           <TextField
-            error={!isValid.name}
+            error={!name}
             name="name"
             id="name"
             label="Name"
@@ -80,7 +91,7 @@ const UserProfileForm = props => {
         <div className="col-md-2"></div>
         <div className="col-md-8">
           <TextField
-            error={!isValid.website}
+            error={!website}
             name="website"
             id="website"
             label="Website"
@@ -100,14 +111,14 @@ const UserProfileForm = props => {
             onChange={handleInputChange}
             disableEmpty
             className={classes.select}
+            renderValue={value => formData.country}
             inputProps={{
               name: "country",
               id: "country"
             }}
           >
-            {countryList.map(countryOption => {
-              const { name, value } = countryOption;
-              return <MenuItem value={value}>{name}</MenuItem>;
+            {countryList.map(country => {
+              return <MenuItem value={country}>{country}</MenuItem>;
             })}
           </Select>
         </div>
@@ -131,8 +142,14 @@ const UserProfileForm = props => {
                   <h6>Drag and drop file here or click to upload</h6>
                 </div>
                 <p className={styles.avatarName}>
-                  <span>{avatarName}</span>
-                  {avatarName ? " uploaded successfully!" : ""}
+                  {uploadingImage ? (
+                    <ColorCircularProgress />
+                  ) : (
+                    <span>
+                      {avatarName}
+                      {avatarName ? " uploaded successfully!" : ""}
+                    </span>
+                  )}
                 </p>
               </section>
             )}
@@ -149,7 +166,9 @@ const UserProfileForm = props => {
                 formData.name &&
                 formData.website &&
                 formData.country &&
-                formData.avatar
+                formData.avatar &&
+                name &&
+                website
               )
             }
             className={classes.saveButton}
