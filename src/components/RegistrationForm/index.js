@@ -11,7 +11,7 @@ import categoryOptions from "../../utility/categoryOptions";
 import { primaryColor, secondaryColor } from "../../constants";
 import Checkbox from "@material-ui/core/Checkbox";
 
-const GreenCheckbox = withStyles({
+const CustomCheckbox = withStyles({
   root: {
     color: primaryColor,
     "&$checked": {
@@ -140,7 +140,7 @@ const RegistrationForm = props => {
       <div className="row form-group">
         <div className="col-md-2"></div>
         <div className="col-md-8">
-          <GreenCheckbox
+          <CustomCheckbox
             checked={formData.agreeCheck}
             onChange={handleCheckboxChange}
             name="agreeCheck"
