@@ -8,6 +8,7 @@ import { primaryColor, secondaryColor } from "../../constants";
 import localForage from "localforage";
 import _isEmpty from "lodash/isEmpty";
 import { storage } from "../../firebase";
+import axios from "axios";
 
 class FormContainer extends Component {
   constructor(props) {
@@ -185,8 +186,34 @@ class FormContainer extends Component {
     }
   };
 
+  sendFormData = () => {
+    const { formData } = this.state;
+    axios
+      .post(
+        "https://cryptopolicetaskbackend.herokuapp.com/save/formdata",
+        {
+          ...formData
+        },
+        {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      .then(res => {
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   handleSubmit = () => {
     const { activeStep } = this.state;
+    if (activeStep == 3) {
+      this.sendFormData();
+    }
     this.setState({ activeStep: activeStep + 1 }, () => {
       localForage.setItem("activeStep", this.state.activeStep);
     });
